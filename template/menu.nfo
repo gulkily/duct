@@ -1,0 +1,8 @@
+<p class=menu>
+	<a href="/">Home</a> ;
+	<a href="/text/">Board</a> ;
+	<a href="/nyc/">NYC</a> ;
+	<a href="/author/">Authors</a> ;
+	<a href="/horoscope/">Horoscope</a> ;
+	<a href="/library/">Library</a>
+</p>

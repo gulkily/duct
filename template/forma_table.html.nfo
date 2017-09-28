@@ -1,0 +1,26 @@
+<div>
+	<form action="./gracias.html">
+		<table border=0>
+			<tr>
+				<td></td>
+				<td>... and then you showed up and were all like,</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td valign=top><span style="font-size: 60pt; vertical-align: top">“</span></td>
+				<td><textarea cols=80 rows=12 name=comment maxlength=4096></textarea></td>
+				<td valign=bottom><span style="font-size: 60pt;">”</span></td>
+			</tr>
+			<tr>
+				<td colspan=3 align=center>
+					<input style="font-size: large;" type=submit value="Go">
+				</td>
+			</tr>
+	<!--
+	<p>Please post a message up to 4,096 characters long.</p>
+	<p>To send the message to the admin include an @ symbol.</p>
+	<p>Sign your message with GPG... or don't.</p>
+	-->
+		</table>
+	</form>
+</div>

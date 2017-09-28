@@ -1,0 +1,3 @@
+<script><!--
+document.write("<font color=red>Warning! JavaScript is enabled in your browser! JavaScript provides no additional functionality on this site, except for the printing of this message. On the other hand, having JavaScript enabled does expose you to additional risks. For information for how to disable JavaScript in your browser, <a href="/docs/faq.html">please consult the FAQ</a>.</font>");
+// --></script>
