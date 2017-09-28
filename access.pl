@@ -42,6 +42,24 @@ if (!-e $INDEXER) {
 	die ("Sanity check failed, can't find $INDEXER");
 }
 
+##################
+
+# Prefixes we will look for in access log to find comments
+# and their corresponding drop folders
+# Wherever there is a gracias.html and board.nfo exists
+# todo add check for board.nfo
+
+my @submitReceivers = `find ./html/ | grep gracias.html`; #todo this is a hack
+
+foreach (@submitReceivers) {
+	s/^\.\/html//;
+	s/$/\?comment=/;
+	chomp;
+}
+	
+##################
+
+
 # ProcessAccessLog (
 #	access log file path
 #   parse mode:
@@ -53,37 +71,14 @@ sub ProcessAccessLog {
 	my $vhostParse = shift;
 	
 	print "Processing $logfile...\n";
-	
-	my @submitReceivers = `find . | grep gracias.html | sed s/^\.// | sed s/\$/?comment=/`; #todo this is a hack
-	#print @submitReceivers;
-	
-	my %submitPrefixes2;
-	
-	foreach my $s (@submitReceivers) {
-		$submitPrefixes2{substr($s, 5)} = substr($s, 6, rindex($s, '/'));
-		#todo this is also a hack, which assumes a prefix of "/html/"
-	}
-	
-	print %submitPrefixes2;
-
-	# Prefixes we will look for in access log to find comments
-	# and their corresponding drop folders
-	#todo save this in an index file
-	my %submitPrefixes = (
-		"/text/gracias.html?comment=" => "text/",
-		"/nyc/gracias.html?comment=" => "nyc/",
-		"/yes/gracias.html?comment=" => "yes/",
-		"/test/gracias.html?comment=" => "test/",
-		"/newboard/gracias.html?comment=" => "newboard/",
-	);
-	
+		
 	# The log file should always be there
 	open(LOGFILE, $logfile) or die("Could not open log file.");
 
 	# The following section parses the access log
 	# Thank you, StackOverflow
 	foreach my $line (<LOGFILE>) {
-		print ".";
+		#print ".";
 		
 		my $site;
 		my $hostname;
@@ -153,6 +148,9 @@ sub ProcessAccessLog {
 				}
 			}
 		}
+		
+		## TEXT SUBMISSION PROCESSING BEGINS HERE ##
+		############################################
 
 		# Now we see if the user is posting a message
 		# We do this by looking for $submitPrefix,
@@ -160,74 +158,74 @@ sub ProcessAccessLog {
 
 		my $submitPrefix;
 		my $submitTarget;
-
-		foreach my $key (keys %submitPrefixes) {
-			if ($submitPrefixes{$key}) {
-				$submitPrefix = $key;
-				
-				if (substr($file, 0, length($submitPrefix)) eq $submitPrefix) {
-					$submitTarget = $submitPrefixes{$key};
-					last;
-				}
+		
+		foreach (@submitReceivers) {
+			if (substr($file, 0, length($_)) eq $_) {
+				$submitPrefix = $_;
+				$submitTarget = substr($_, 1);
+				$submitTarget = substr($submitTarget, 0, rindex($submitTarget, "gracias.html"));
+				last;
 			}
 		}
-		
-		if (substr($file, 0, length($submitPrefix)) eq $submitPrefix) {
-			print "Found a message...\n";
-			
-			# The message comes after the prefix, so just trim it
-			my $message = (substr($file, length($submitPrefix)));
-			
-			# Unpack from URL encoding, probably exploitable :(
-			$message =~ s/\+/ /g;
-			$message = uri_decode($message);
-			$message = decode_entities($message);
-			$message = trim($message);
-	
-			# If we're parsing a vhost log, add the site name to the message
-			if ($vhostParse && $site) {
-				$message .= "\n" . $site;
-			}
-
-			# Generate filename from date and time
-			my $filename;
-			
-			$filename = $date . '_' . $time;
-			$filename =~ s/[^a-zA-Z0-9_-]//g;
-			
-			print "I'm going to call it $filename\n";
-			
-			# Prefix for new text posts
-			my $filenameDir = $HTMLDIR . $submitTarget;
-			
-			print "I'm going to put $filename into $filenameDir\n";
-			
-			# Now we prefix the filename with the directory prefix
-			#$filename = $filenameDir . $filename;			
-			
-			# If the submission contains an @-sign, hide it into the admin dir
-			if (index($message, "@") != -1) {
-				$filenameDir = "$SCRIPTDIR/admin/";
 				
-				#open (my $fhn, '>', $filenameDir . $filename . ".nfo") or die ('Could not open nfo file to write to');
-				#print $fhn '#';
-				#close $fhn;
+		if ($submitPrefix) {
+			if (substr($file, 0, length($submitPrefix)) eq $submitPrefix) {
+				print "Found a message...\n";
+				
+				# The message comes after the prefix, so just trim it
+				my $message = (substr($file, length($submitPrefix)));
+				
+				# Unpack from URL encoding, probably exploitable :(
+				$message =~ s/\+/ /g;
+				$message = uri_decode($message);
+				$message = decode_entities($message);
+				$message = trim($message);
+		
+				# If we're parsing a vhost log, add the site name to the message
+				if ($vhostParse && $site) {
+					$message .= "\n" . $site;
+				}
+
+				# Generate filename from date and time
+				my $filename;
+				
+				$filename = $date . '_' . $time;
+				$filename =~ s/[^a-zA-Z0-9_-]//g;
+				
+				print "I'm going to call it $filename\n";
+				
+				# Prefix for new text posts
+				my $filenameDir = $HTMLDIR . $submitTarget;
+				
+				print "I'm going to put $filename into $filenameDir\n";
+				
+				# Now we prefix the filename with the directory prefix
+				#$filename = $filenameDir . $filename;			
+				
+				# If the submission contains an @-sign, hide it into the admin dir
+				if (index($message, "@") != -1) {
+					$filenameDir = "$SCRIPTDIR/admin/";
+					
+					#open (my $fhn, '>', $filenameDir . $filename . ".nfo") or die ('Could not open nfo file to write to');
+					#print $fhn '#';
+					#close $fhn;
+				}
+				
+				# Make sure we don't clobber an existing file
+				# If filename exists, add (1), (2), and so on
+				my $filename_root = $filename;
+				my $i = 0;
+				while (-e $filenameDir . $filename . ".txt") {
+					$i++;
+					$filename = $filename_root . " (" . $i . ")";
+				}
+				$filename .= '.txt';
+				
+				# Try to write to the file, exit if we can't
+				open (my $fh, '>', $filenameDir . $filename) or die('Could not open text file to write to '.$filenameDir . $filename);
+				print $fh $message;
+				close $fh;						
 			}
-			
-			# Make sure we don't clobber an existing file
-			# If filename exists, add (1), (2), and so on
-			my $filename_root = $filename;
-			my $i = 0;
-			while (-e $filenameDir . $filename . ".txt") {
-				$i++;
-				$filename = $filename_root . " (" . $i . ")";
-			}
-			$filename .= '.txt';
-			
-			# Try to write to the file, exit if we can't
-			open (my $fh, '>', $filenameDir . $filename) or die('Could not open text file to write to '.$filenameDir . $filename);
-			print $fh $message;
-			close $fh;						
 		}
 		
 		my $actionPrefix = "/action/";
