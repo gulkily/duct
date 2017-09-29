@@ -40,13 +40,13 @@ if (!-e $HTMLDIR || !-d $HTMLDIR) {
 sub GetTemplate {
 	my $filename = shift;
 	my $length = 10240;
-	
+
 	if (-e $filename) {
 		return GetFile($filename);
 	} else {
 		return GetFile("$SCRIPTDIR/template/$filename");
 	}
-	
+
 	die("GetTemplate failed, something is probably wrong");
 }
 
@@ -96,7 +96,7 @@ my $httpLinks = 0;
 # the folder is empty
 my $itemsPrinted = 0;
 
-# If there is an index.lst, use that 
+# If there is an index.lst, use that
 if (GetFile('index.lst')) { #todo don't read same file twice
 	@foo = split("\n", GetFile('index.lst'));
 	$LocalPrefix = $HTMLDIR;
@@ -121,7 +121,7 @@ if ($httpLinks) {
 	foreach my $link(@foo) {
 		my $url = substr($link, 0, index($link, " "));
 		my $title = substr($link, index($link, " "));
-		 
+
 		print "<li><a href=\"$url\">$title</a></li>\n";
 	}
 	print "</ul>\n";
@@ -133,27 +133,27 @@ if ($httpLinks) {
 	# board.nfo should contain "1" to enable it
 	# todo disabled for now, needs to be decoupled from comment form
 	my $BoardMode = 1; #GetFile("board.nfo");
-		
+
 	foreach my $file (@foo) {
 		chomp($file);
 
 		if (
-			!($file eq 'index.html') && 
-			!($file eq 'index.pl') && 
+			!($file eq 'index.html') &&
+			!($file eq 'index.pl') &&
 			!($file eq 'index.html.tmp') &&
-			!($file eq 'gracias.html') && 
-			!(substr($file, length($file) - 4, 4) eq ".nfo") && 
+			!($file eq 'gracias.html') &&
+			!(substr($file, length($file) - 4, 4) eq ".nfo") &&
 			!(substr($file, length($file) - 4, 4) eq ".lst")
 		) {
 			my $filenfo = GetFile($LocalPrefix . $file . ".nfo");
 			chomp ($filenfo);
 			my $fileTitle = ( split /\n/, $filenfo )[0];
-			
+
 			if ($fileTitle && -d $file && !-e "$file/title.nfo") {
 				#print "Writing a title.nfo for $file, since it doesn't exist";
 				PutFile("$file/title.nfo", $fileTitle);
 			}
-			
+
 			$itemsPrinted++;
 
 			if ($fileTitle) {
@@ -161,79 +161,38 @@ if ($httpLinks) {
 					print '<h3><a href="' . $file . '">' . $filenfo . '</a></h3>';
 				}
 			} else {
-				
-				
 				my $txt = "";
 				my $isSigned = 0;
-				
+
 				my $gpg_key;
 
 				if (substr($file, length($file) -4, 4) eq ".txt") {
-					$txt = trim(GetFile($LocalPrefix . $file));
-													
-					# This is where we check for a GPG signed message and sort it accordingly
-					my $gpg_header = "-----BEGIN PGP SIGNED MESSAGE-----";
+					my %gpgResults = GpgParse($LocalPrefix . $file);
+					#print %gpgResults;
 
-					# If there is a GPG header...
-					if (substr($txt, 0, length($gpg_header)) eq $gpg_header) {
-						# Verify the file by using command-line gpg
-						# --status-fd 1 makes gpg output to STDOUT using a more concise syntax
-						my $gpg_result = `gpg --verify --status-fd 1 "$LocalPrefix$file"`;
-						
-						my $key_id_prefix;
-						my $key_id_suffix;
+					$txt = $gpgResults{'text'};
+					$isSigned = $gpgResults{'isSigned'};
+					$gpg_key = $gpgResults{'key'};
 
-						if (index($gpg_result, "[GNUPG:] NO_PUBKEY ") >= 0) {
-							$key_id_prefix = "[GNUPG:] NO_PUBKEY ";
-							$key_id_suffix = "\n";
-						}
-						
-						if (index($gpg_result, "[GNUPG:] GOODSIG ") >= 0 ) {
-							$key_id_prefix = "[GNUPG:] GOODSIG ";
-							$key_id_suffix = " ";
-						}
-											
-						if ($key_id_prefix) {						
-							# Extract the key fingerprint from GPG's output.
-							$gpg_key = substr($gpg_result, index($gpg_result, $key_id_prefix) + length($key_id_prefix));
-							$gpg_key = substr($gpg_key, 0, index($gpg_key, $key_id_suffix));
-
-							$txt = `gpg --decrypt "$LocalPrefix$file"`;
-															
-							$gpg_key = encode_entities($gpg_key);
-							$gpg_key =~ s/\n/<br>\n/g;
-							
-							$isSigned = 1;
-							
-							my $fullPath;
-							if (index($file, '/') < 0) {
-								$fullPath = substr(trim(`pwd`) . "/" . $file, length($HTMLDIR));
-							} else {
-								$fullPath = $file;
-							} #todo this is kind of a hack
-							AppendFile("$HTMLDIR/author/$gpg_key.lst", $fullPath);
-						}
-					}
-										
 					$txt = encode_entities($txt, '<>&"');
 					$txt =~ s/\n/<br>\n/g;
 				}
-				
+
 				my $signedCss = "";
 				if ($isSigned) {
 					$signedCss = "signed";
 				}
-				
+
 				#if ($BoardMode) {
 					print "<p class=\"txt $signedCss\">";
 					print '<a class="header" href="' . $file . '">' . $file . '</a>';
 					print '<br>' . $txt if $txt;
-					
+
 					print "<br><em class=signed>Signed, <a href=\"/author/$gpg_key\">$gpg_key</a></em>" if ($isSigned && $gpg_key);
-					
+
 					print '</p>';
 				#}
-				
+
 
 				#my $txtHtml = GetTemplate('htmlstart.html.nfo');
 				#$txtHtml =~ s/\$title/$file/;
@@ -241,7 +200,7 @@ if ($httpLinks) {
 				#$txtHtml .= "<p>$txt</p>";
 				#$txtHtml .= GetTemplate('footer.nfo');
 				#$txtHtml .= GetTemplate("htmlend.nfo");
-				
+
 				#PutFile($LocalPrefix . $file . ".html", $txtHtml);
 			}
 		}
@@ -250,7 +209,7 @@ if ($httpLinks) {
 
 if (GetFile("board.nfo")) {
 	print GetTemplate("forma.html.nfo");
-	
+
 	PutFile("gracias.html", GetTemplate('gracias.html.nfo'));
 }
 
@@ -259,12 +218,12 @@ if (open FILE, "<$horoscopeFile") {
 	srand;
 	my @array = <FILE>;
 	close FILE;
-	
+
 	my $randomline = $array[rand @array];
 	print "<p>";
 	print $randomline;
 	print "</p>";
-	
+
 	$itemsPrinted++;
 }
 
@@ -281,7 +240,7 @@ if ($counter) {
 }
 if ($genCount) {
 	PutFile("gencount.nfo", $genCount);
-	if ($counter) { print " "; } 
+	if ($counter) { print " "; }
 	print "This page has been generated <span class=counter>" . $genCount . "</span> times.";
 }
 if ($counter || $genCount) { print "</p>" };
