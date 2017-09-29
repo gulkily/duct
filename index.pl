@@ -150,8 +150,15 @@ if ($httpLinks) {
 			my $fileTitle = ( split /\n/, $filenfo )[0];
 
 			if ($fileTitle && -d $file && !-e "$file/title.nfo") {
-				#print "Writing a title.nfo for $file, since it doesn't exist";
+				# If there's a $dir.nfo but no $dir/title.nfo, write
+				# a title.nfo
 				PutFile("$file/title.nfo", $fileTitle);
+			}
+
+			if (-d $file && -e "$file/title.nfo" && !$fileTitle) {
+				# And the opposite, if there's title.nfo inside a directory, but
+				# no directory.nfo, copy the title from $dir/title.nfo
+				PutFile($LocalPrefix . $file . ".nfo", GetFile("$file/title.nfo"));
 			}
 
 			$itemsPrinted++;
