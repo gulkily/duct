@@ -132,7 +132,7 @@ if ($httpLinks) {
 	# $BoardMode enables inline printing the contents of .txt files
 	# board.nfo should contain "1" to enable it
 	# todo disabled for now, needs to be decoupled from comment form
-	my $BoardMode = 1; #GetFile("board.nfo");
+	my $BoardMode = GetFile("board.nfo");
 
 	foreach my $file (@foo) {
 		chomp($file);
@@ -172,6 +172,7 @@ if ($httpLinks) {
 				my $isSigned = 0;
 
 				my $gpg_key;
+				my $alias;
 
 				if (substr($file, length($file) -4, 4) eq ".txt") {
 					my %gpgResults = GpgParse($LocalPrefix . $file);
@@ -180,6 +181,7 @@ if ($httpLinks) {
 					$txt = $gpgResults{'text'};
 					$isSigned = $gpgResults{'isSigned'};
 					$gpg_key = $gpgResults{'key'};
+					$alias = $gpgResults{'alias'};
 
 					$txt = encode_entities($txt, '<>&"');
 					$txt =~ s/\n/<br>\n/g;
@@ -188,14 +190,39 @@ if ($httpLinks) {
 				my $signedCss = "";
 				if ($isSigned) {
 					$signedCss = "signed";
+
+					#todo un-hack this
+					my $currentDir = `pwd`;
+					chomp ($currentDir);
+					my $currentDir = substr($currentDir, length($HTMLDIR));
+
+					AppendFile("$HTMLDIR/author/$gpg_key.lst", $currentDir . "/" . $file);
+
+					if ($alias) {
+						PutFile("$HTMLDIR/author/$gpg_key/alias.nfo", $alias);
+					}
 				}
+
+				if (!$alias) {
+					if (-e "$HTMLDIR/author/$gpg_key/alias.nfo") {
+						$alias = GetFile("$HTMLDIR/author/$gpg_key/alias.nfo");
+						chomp($alias);
+					} else {
+						$alias = $gpg_key;
+					}
+				}
+
+
+				$alias = encode_entities($alias, '<>&"');
+				$alias =~ s/\n/<br>\n/g;
+
 
 				#if ($BoardMode) {
 					print "<p class=\"txt $signedCss\">";
 					print '<a class="header" href="' . $file . '">' . $file . '</a>';
 					print '<br>' . $txt if $txt;
 
-					print "<br><em class=signed>Signed, <a href=\"/author/$gpg_key\">$gpg_key</a></em>" if ($isSigned && $gpg_key);
+					print "<br><em class=signed>Signed, <a href=\"/author/$gpg_key\">$alias</a></em>" if ($isSigned && $gpg_key);
 
 					print '</p>';
 				#}
@@ -251,7 +278,6 @@ if ($genCount) {
 	print "This page has been generated <span class=counter>" . $genCount . "</span> times.";
 }
 if ($counter || $genCount) { print "</p>" };
-
 
 PrintMenu();
 

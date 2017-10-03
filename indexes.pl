@@ -28,6 +28,9 @@ my $HTMLDIR = $SCRIPTDIR . "/html";
 # Directories we'll start with
 my @dirsToIndex = (
 	"$HTMLDIR",
+	"$HTMLDIR/author",
+	"$HTMLDIR/text",
+	"$HTMLDIR/test",
 );
 
 # Write the index for directory
