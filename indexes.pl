@@ -132,7 +132,15 @@ foreach my $authorIndex (@authorIndexes) {
 	}
 	close $handle;
 
-	PutFile("$HTMLDIR/author/$author/title.nfo", "Posts by $author");
+	my $alias = GetFile("$HTMLDIR/author/$author/alias.nfo");
+	if ($alias) {
+		$alias = encode_entities($alias, '<>&"');
+		PutFile("$HTMLDIR/author/$author.nfo", "Posts by $alias");
+		PutFile("$HTMLDIR/author/$author/title.nfo", "Posts by $alias");
+	} else {
+		PutFile("$HTMLDIR/author/$author.nfo", "Posts by $author");
+		PutFile("$HTMLDIR/author/$author/title.nfo", "Posts by $author");
+	}
 	PutFile("$HTMLDIR/author/$author/index.lst", join("\n", @postsByAuthor));
 
 	indexDir("$HTMLDIR/author/$author");
