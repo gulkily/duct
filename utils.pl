@@ -86,7 +86,7 @@ sub GpgParse {
 				@split = split("/", $gpg_key);
 				$gpg_key = $split[1];
 
-				$txt = "$gpg_key has posted a public key setting their alias to $alias";
+				$txt = "$gpg_key has posted a public key setting their alias to $alias\n";
 
 				$isSigned = 1;
 
@@ -109,8 +109,13 @@ sub GpgParse {
 			$key_id_suffix = "\n";
 		}
 
-		if (index($gpg_result, "[GNUPG:] GOODSIG ") >= 0 ) {
+		if (index($gpg_result, "[GNUPG:] GOODSIG ") >= 0) {
 			$key_id_prefix = "[GNUPG:] GOODSIG ";
+			$key_id_suffix = " ";
+		}
+
+		if (index($gpg_result, "[GNUPG:] EXPKEYSIG ") >= 0) {
+			$key_id_prefix = "[GNUPG:] EXPKEYSIG ";
 			$key_id_suffix = " ";
 		}
 

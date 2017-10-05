@@ -22,6 +22,11 @@ if (!-e 'utils.pl') {
 }
 require 'utils.pl';
 
+if (!-e 'sorter.pl') {
+	die("Sanity check failed, can't find sorter.pl");
+}
+require('sorter.pl');
+
 # This is where the generated HTML lives
 my $HTMLDIR = $SCRIPTDIR . "/html";
 
@@ -40,7 +45,7 @@ sub indexDir {
 
 	# use $SCRIPTDIR global to determine path of helper scripts
 	my $pathToIndexPl = "$SCRIPTDIR/index.pl $SCRIPTDIR";
-	my $pathToSorterPl = "$SCRIPTDIR/sorter.pl";
+	#my $pathToSorterPl = "$SCRIPTDIR/sorter.pl";
 
 	print "Writing index for directory $dir\n";
 
@@ -50,9 +55,11 @@ sub indexDir {
 
 	# If it's a board, call sorter.pl on it
 	if (GetFile("$dir/board.nfo")) {
-		print "cd $SCRIPTDIR; perl $pathToSorterPl $dir";
+		#print "cd $SCRIPTDIR; perl $pathToSorterPl $dir";
 
-		system("cd $SCRIPTDIR; perl $pathToSorterPl $dir");
+		#system("cd $SCRIPTDIR; perl $pathToSorterPl $dir");
+
+		sortDir($dir);
 	}
 }
 

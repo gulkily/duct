@@ -41,22 +41,22 @@ sub sortDir {
 
 		my $fileName;
 		$fileName = substr($file, length($filenameDir) + 1);
-		
+
 		# Ignore files without an underscore in the name or that begin with an underscore
 		if (index($fileName, "_") > 2) {
 			# The date is the thing before the underscore
 			my $fileDate = substr($fileName, 0, index($fileName, "_"));
 			my $fileMonth = substr($fileDate, 2);
-							
+
 			# If it is not the current date...
-			if ($fileMonth ne $currentMonth) {			
+			if ($fileMonth ne $currentMonth) {
 				# ... make sure that directory exists...
 				my $dirName = "$filenameDir/$fileMonth";
 				if (!-d $dirName && !-e $dirName) {
 					print "Creating $dirName\n";
 					mkdir ($dirName);
 				}
-				
+
 				# ... and then move the file into it
 				if (-d $dirName) {
 					print "Moving $file to $dirName\n";
@@ -67,21 +67,21 @@ sub sortDir {
 	}
 }
 
-my $dirToSort = shift;
-chomp ($dirToSort);
+#my $dirToSort = shift;
+#chomp ($dirToSort);
 
-if (-e $dirToSort && -d $dirToSort) {
-	print "$dirToSort exists, proceeding...\n";
-} else {
-	die "Sanity check failed, $dirToSort doesn't exist";
-}
+#if (-e $dirToSort && -d $dirToSort) {
+#	print "$dirToSort exists, proceeding...\n";
+#} else {
+#	die "Sanity check failed, $dirToSort doesn't exist";
+#}
 
-if (-e "$dirToSort/board.nfo" && GetFile("$dirToSort/board.nfo") == 1) {
-	print "$dirToSort/board.nfo contains expected 1, proceeding...\n";
-} else {
-	die("Couldn't find needed $dirToSort/board.nfo");
-}
+#if (-e "$dirToSort/board.nfo" && GetFile("$dirToSort/board.nfo") == 1) {
+#	print "$dirToSort/board.nfo contains expected 1, proceeding...\n";
+#} else {
+#	die("Couldn't find needed $dirToSort/board.nfo");
+#}
 
-sortDir("$SCRIPTDIR/html/test");
+#sortDir("$SCRIPTDIR/html/test");
 
 1;
