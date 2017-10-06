@@ -52,11 +52,13 @@ sub GetTemplate {
 
 # Look for the title in title.nfo, otherwise Untitled
 $title = trim(GetFile("title.nfo", 1024) || "Untitled");
+my $primaryColor = "#008080";
 
 # Get the htmlstart template
 my $htmlStart = GetTemplate('htmlstart.html.nfo');
 # and substitute $title with the title
 $htmlStart =~ s/\$title/$title/;
+$htmlStart =~ s/\$primaryColor/$primaryColor/g;
 
 # Print it
 print $htmlStart;
@@ -185,57 +187,66 @@ if ($httpLinks) {
 
 					$txt = encode_entities($txt, '<>&"');
 					$txt =~ s/\n/<br>\n/g;
-				}
 
-				my $signedCss = "";
-				if ($isSigned) {
-					$signedCss = "signed";
 
-					#todo un-hack this
-					my $currentDir = `pwd`;
-					chomp ($currentDir);
-					my $currentDir = substr($currentDir, length($HTMLDIR));
+					my $signedCss = "";
+					if ($isSigned) {
+						$signedCss = "signed";
 
-					AppendFile("$HTMLDIR/author/$gpg_key.lst", $currentDir . "/" . $file);
+						#todo un-hack this
+						my $currentDir = `pwd`;
+						chomp ($currentDir);
+						my $currentDir = substr($currentDir, length($HTMLDIR));
 
-					if ($alias) {
-						PutFile("$HTMLDIR/author/$gpg_key/alias.nfo", $alias);
+						AppendFile("$HTMLDIR/author/$gpg_key.lst", $currentDir . "/" . $file);
+
+						if ($alias) {
+							PutFile("$HTMLDIR/author/$gpg_key/alias.nfo", $alias);
+						}
 					}
-				}
 
-				if (!$alias) {
-					if (-e "$HTMLDIR/author/$gpg_key/alias.nfo") {
-						$alias = GetFile("$HTMLDIR/author/$gpg_key/alias.nfo");
-						chomp($alias);
-					} else {
-						$alias = $gpg_key;
+					if (!$alias) {
+						if (-e "$HTMLDIR/author/$gpg_key/alias.nfo") {
+							$alias = GetFile("$HTMLDIR/author/$gpg_key/alias.nfo");
+							chomp($alias);
+						} else {
+							$alias = $gpg_key;
+						}
 					}
+
+
+					$alias = encode_entities($alias, '<>&"');
+					$alias =~ s/\n/<br>\n/g;
+
+
+					#if ($BoardMode) {
+						print "<p class=\"txt $signedCss\">";
+
+						if (substr($file, length($file) -4, 4) eq ".txt") {
+							print '<a class="header" href="' . $file . '.html">' . substr($file, 0, length($file) -4) . '</a>';
+							print ' <a class="header" href="' . $file . '">.txt</a>';
+						} else {
+							print '<a class="header" href="' . $file . '">' . $file . '</a>';
+						}
+						print '<br>' . $txt if $txt;
+
+						print "<br><em class=signed>Signed, <a href=\"/author/$gpg_key\">$alias</a></em>" if ($isSigned && $gpg_key);
+
+						print '</p>';
+
+						my $txtHtml = GetTemplate('htmlstart.html.nfo');
+						$txtHtml =~ s/\$title/$file/;
+						$txtHtml =~ s/\$primaryColor/$primaryColor/g;
+						$txtHtml .= "<h1>$file</h1>";
+						$txtHtml .= "<p class=\"$signedCss\">$txt";
+						$txtHtml .= "<br><em class=signed>Signed, <a href=\"/author/$gpg_key\">$alias</a></em>" if ($isSigned && $gpg_key);
+						$txtHtml .= "</p>";
+						$txtHtml .= GetTemplate('footer.nfo');
+						$txtHtml .= GetTemplate("htmlend.nfo");
+
+						PutFile($LocalPrefix . $file . ".html", $txtHtml);
+					#}
 				}
-
-
-				$alias = encode_entities($alias, '<>&"');
-				$alias =~ s/\n/<br>\n/g;
-
-
-				#if ($BoardMode) {
-					print "<p class=\"txt $signedCss\">";
-					print '<a class="header" href="' . $file . '">' . $file . '</a>';
-					print '<br>' . $txt if $txt;
-
-					print "<br><em class=signed>Signed, <a href=\"/author/$gpg_key\">$alias</a></em>" if ($isSigned && $gpg_key);
-
-					print '</p>';
-				#}
-
-
-				#my $txtHtml = GetTemplate('htmlstart.html.nfo');
-				#$txtHtml =~ s/\$title/$file/;
-				#$txtHtml .= GetTemplate('header.nfo');
-				#$txtHtml .= "<p>$txt</p>";
-				#$txtHtml .= GetTemplate('footer.nfo');
-				#$txtHtml .= GetTemplate("htmlend.nfo");
-
-				#PutFile($LocalPrefix . $file . ".html", $txtHtml);
 			}
 		}
 	}

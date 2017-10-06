@@ -63,6 +63,8 @@ sub GpgParse {
 
 	my $alias;
 
+	my $keyExpired = 0;
+
 	# Signed messages begin with this header
 	my $gpg_message_header = "-----BEGIN PGP SIGNED MESSAGE-----";
 
@@ -86,7 +88,7 @@ sub GpgParse {
 				@split = split("/", $gpg_key);
 				$gpg_key = $split[1];
 
-				$txt = "$gpg_key has posted a public key setting their alias to $alias\n";
+				$txt = "The key fingerprint $gpg_key has been aliased to \"$alias\"\n";
 
 				$isSigned = 1;
 
@@ -117,6 +119,8 @@ sub GpgParse {
 		if (index($gpg_result, "[GNUPG:] EXPKEYSIG ") >= 0) {
 			$key_id_prefix = "[GNUPG:] EXPKEYSIG ";
 			$key_id_suffix = " ";
+
+			$keyExpired = 1;
 		}
 
 		if ($key_id_prefix) {
@@ -136,6 +140,7 @@ sub GpgParse {
 	$returnValues{'text'} = $txt;
 	$returnValues{'key'} = $gpg_key;
 	$returnValues{'alias'} = $alias;
+	$returnValues{'keyExpired'} = $keyExpired;
 
 	return %returnValues;
 }
