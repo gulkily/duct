@@ -3,9 +3,12 @@
 use strict;
 use utf8;
 
+use lib 'inc';
+
 use URI::Encode qw(uri_decode);
 use URI::Escape;
 use HTML::Entities;
+use Storable;
 
 # Gets the contents of a file
 sub GetFile {
@@ -64,6 +67,12 @@ sub GpgParse {
 	my $alias;
 
 	my $keyExpired = 0;
+
+	if (-e $filePath . ".cache") {
+		my %returnValues = %{retrieve($filePath . ".cache")};
+
+		return %returnValues;
+	}
 
 	# Signed messages begin with this header
 	my $gpg_message_header = "-----BEGIN PGP SIGNED MESSAGE-----";
@@ -141,6 +150,8 @@ sub GpgParse {
 	$returnValues{'key'} = $gpg_key;
 	$returnValues{'alias'} = $alias;
 	$returnValues{'keyExpired'} = $keyExpired;
+
+	store \%returnValues, $filePath . ".cache";
 
 	return %returnValues;
 }
