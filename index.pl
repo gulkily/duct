@@ -241,7 +241,7 @@ if ($httpLinks) {
 						$txtHtml .= "<p class=\"$signedCss\">$txt";
 						$txtHtml .= "<br><em class=signed>Signed, <a href=\"/author/$gpg_key\">$alias</a></em>" if ($isSigned && $gpg_key);
 						$txtHtml .= "</p>";
-						$txtHtml .= GetTemplate('footer.nfo');
+						$txtHtml .= GetTemplate('menu.nfo');
 						$txtHtml .= GetTemplate("htmlend.nfo");
 
 						PutFile($LocalPrefix . $file . ".html", $txtHtml);
