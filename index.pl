@@ -97,6 +97,7 @@ my $httpLinks = 0;
 # If it is 0 after everything, we will print a message that
 # the folder is empty
 my $itemsPrinted = 0;
+my $folderEmpty = 1;
 
 # If there is an index.lst, use that
 if (GetFile('index.lst')) { #todo don't read same file twice
@@ -163,11 +164,16 @@ if ($httpLinks) {
 				PutFile($LocalPrefix . $file . ".nfo", GetFile("$file/title.nfo"));
 			}
 
-			$itemsPrinted++;
+			$folderEmpty = 0;
 
 			if ($fileTitle) {
-				if (!($filenfo eq '#')) {
-					print '<h3><a href="' . $file . '">' . $filenfo . '</a></h3>';
+				if (!($fileTitle eq '#')) {
+					if (-d $file && -e "$file/itemCount.nfo" && GetFile("$file/itemCount.nfo")) {
+						$fileTitle .= " (" . GetFile("$file/itemCount.nfo") . ")";
+					}
+					print '<h3><a href="' . $file . '">' . $fileTitle . '</a></h3>';
+
+					$itemsPrinted++;
 				}
 			} else {
 				my $txt = "";
@@ -245,6 +251,8 @@ if ($httpLinks) {
 						$txtHtml .= GetTemplate("htmlend.nfo");
 
 						PutFile($LocalPrefix . $file . ".html", $txtHtml);
+
+						$itemsPrinted++;
 					#}
 				}
 			}
@@ -269,12 +277,15 @@ if (open FILE, "<$horoscopeFile") {
 	print $randomline;
 	print "</p>";
 
+	$folderEmpty = 0;
 	$itemsPrinted++;
 }
 
-if (!$itemsPrinted) {
+if ($folderEmpty) {
 	print "<p>(This folder appears to be empty.)</p>";
 }
+
+PutFile("itemCount.nfo", $itemsPrinted);
 
 my $counter = trim(GetFile("counter.nfo"));
 my $genCount = trim(GetFile("gencount.nfo")) + 1;
