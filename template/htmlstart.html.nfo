@@ -20,7 +20,7 @@ h3 a {
 	display: block;
 }
 a {
-	color: #008080;
+	color: $primaryColor;
 	background-color: #f0fff0;
 }
 .menu a {
@@ -58,10 +58,10 @@ img.preload {
 	display: none
 }
 h1 {
-	background-color: #008080;
+	background-color: $primaryColor;
 	color: #f0fff0;
 	padding: 5px;
-	border: solid 5px #008080;
+	border: solid 5px $primaryColor;
 	border-radius: 5px;
 }
 a:href=# {
