@@ -49,6 +49,10 @@ a {
 	animation-duration: 10s;
 	animation-iteration-count: infinite;
 }
+p.txt {
+	border: 1px dotted $primaryColor;
+	border-radius: 1px;
+}
 blink {
 	animation-name: pulse;
 	animation-duration: 1s;
