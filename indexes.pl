@@ -14,6 +14,10 @@ my $HTMLDIR = "$SCRIPTDIR/html/";
 
 print "Verifying that $HTMLDIR exists...\n";
 if (!-e $HTMLDIR || !-d $HTMLDIR) {
+	if (-e "$SCRIPTDIR/default_html") {
+		print "$HTMLDIR is missing, creating it and populating from default_html";
+		system("cd $SCRIPTDIR; mkdir html; cp -r default_html/* html");
+	}
 	die ("Sanity check failed, \$HTMLDIR=$HTMLDIR, but it isn't a directory");
 }
 
