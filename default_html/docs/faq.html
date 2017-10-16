@@ -1,0 +1,62 @@
+<html>
+<head>
+<title>Frequently Asked Questions (FAQ)</title>
+<style>
+	<!--
+code { padding: 5px; background-color: #000000; color: #00ff00; }	
+
+
+	-->
+</style>
+</head>
+<body>
+
+<h1>Frequently Asked Questions (FAQ)</h1>
+
+<p>Thank you for looking at the FAQ.</p>
+
+<h2>How do I read .epub files?</h2>
+
+<p>On Windows, Mac, and *nix, the Calibre application is recommended for reading and conversions.</p>
+
+<p>For other platforms, please use you favorite search engine to look up "epub &lt;your platform&gt;".</p>
+
+<h2>How do I read .mobi and .azw3 files?</h2>
+
+<p>These are Amazon Kindle files, which can be read using Kindle devices or the Kindle app on supported platforms.</p>
+
+<p>These files can also be opened by the Calibre application.</p>
+
+<h2>How do I edit file descriptions?</h2>
+
+<p>File descriptions are stored in ".nfo" files, which are plain text files.</p>
+
+<p>For a file or directory called "foo.bar", create a plain text file named "foo.bar.nfo" and place the description in there.</p>
+
+<h2>How do I create an identity?</h2>
+
+<p>You must use a program called GnuPG (aka GPG). It is a command-line program. It is available for your OS. You must learn how to use it. It is not very hard.</p>
+
+<p>To install GPG, go to <a href="http://gnupg.org/">gnupg.org</a>. Once you have installed GPG, you must open a command prompt window. On Windows, it is called <b>Command Prompt</b>. On Mac, it is called <b>Terminal</b>.</p>
+
+<p>To make a new key/identity for yourself, type <code>gpg --gen-key</code> and follow the instructions. You typically only have to do this once. It is like creating an account.</p>
+
+<p>It is not necessary to register on the server before posting a signed message.</p>
+
+<p>If you get frustrated or stuck, ask a Linux user you know to help you.</p>
+
+<h2>How do I sign my messages?</h2>
+
+<p>First, you must install GPG and create an identity, as described in the question above.</p>
+
+<p>To sign a new message, first save it to a text file, like <u>SomeFile.txt</u>.</p>
+
+<p>Then type <code>gpg --clearsign <u>SomeFile.txt</u></code> to sign the contents of that file and save it as SomeFile.txt.asc.</p>
+
+<p>Alternatively, you can type <code>gpg --clearsign</code> and type your message into the command prompt window. Press Ctrl+D (or Ctrl+W on Windows) to finish and display the message, now signed.</p>
+
+<h2>How do I host my own node?</h2>
+
+<p>You can host a node on a VPN or on your own Raspberry Pi device.</p>
+
+</body></html>
