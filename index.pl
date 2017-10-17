@@ -24,9 +24,6 @@ use Date::Parse;
 # currently doesn't do anything
 my $DEBUG=1;
 
-# this will hold the title of the page
-my $title;
-
 # htmlroot under $SCRIPTDIR
 my $HTMLDIR = "$SCRIPTDIR/html";
 
@@ -50,6 +47,9 @@ sub GetTemplate {
 	die("GetTemplate failed, something is probably wrong");
 }
 
+# this will hold the title of the page
+my $title;
+
 # Look for the title in title.nfo, otherwise Untitled
 $title = trim(GetFile("title.nfo", 1024) || "Untitled");
 my $primaryColor = "#008080";
@@ -72,13 +72,13 @@ my $pwd = `pwd`;
 my $MYNAME = trim(substr($pwd, length($HTMLDIR))) . "/";
 
 # Print the top menu
-sub PrintMenu {
+sub GetMenu {
 	my $topMenu = GetTemplate('menu.nfo');
 	$topMenu =~ s/$MYNAME/#/;
-	print $topMenu;
+	return $topMenu;
 }
 
-PrintMenu();
+print GetMenu();
 
 # Now the header, which should (todo) be different from the topmenu
 print GetTemplate("header.nfo");
@@ -311,7 +311,7 @@ if ($genCount) {
 if ($counter || $genCount) { print "</p>" };
 
 # Print the same menu as at the top of the page
-PrintMenu();
+print GetMenu();
 
 # Close html
 print GetTemplate("htmlend.nfo");
