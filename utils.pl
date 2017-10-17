@@ -3,12 +3,16 @@
 use strict;
 use utf8;
 
-use lib 'inc';
-
 use URI::Encode qw(uri_decode);
 use URI::Escape;
 use HTML::Entities;
 use Storable;
+
+sub GetCache {
+}
+
+sub PutCache {
+}
 
 # Gets the contents of a file
 sub GetFile {
