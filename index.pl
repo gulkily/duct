@@ -19,7 +19,7 @@ require "$SCRIPTDIR/utils.pl";
 
 # we need this
 use HTML::Entities;
-#use Date::Parse;
+use Date::Parse;
 
 # currently doesn't do anything
 my $DEBUG=1;
@@ -243,8 +243,9 @@ if ($httpLinks) {
 						my $txtHtml = GetTemplate('htmlstart.html.nfo');
 						$txtHtml =~ s/\$title/$file/;
 						$txtHtml =~ s/\$primaryColor/$primaryColor/g;
-						$txtHtml .= "<h1>$file</h1>";
-						$txtHtml .= "<p class=\"$signedCss\">$txt";
+						$txtHtml .= "<h1>" . $file . "</h1>";
+						$txtHtml .= "<p class=\"txt $signedCss\">";
+						$txtHtml .= "$txt";
 						$txtHtml .= "<br><em class=signed>Signed, <a href=\"/author/$gpg_key\">$alias</a></em>" if ($isSigned && $gpg_key);
 						$txtHtml .= "</p>";
 						$txtHtml .= GetTemplate('menu.nfo');
@@ -260,12 +261,16 @@ if ($httpLinks) {
 	}
 }
 
+# If it's a board (board.nfo == 1)
 if (GetFile("board.nfo")) {
+	# Add a submission form to the end of the page
 	print GetTemplate("forma.html.nfo");
 
+	# Make sure the submission form has somewhere to go
 	PutFile("gracias.html", GetTemplate('gracias.html.nfo'));
 }
 
+# If there is a horoscope.lst file, write a random line from it
 my $horoscopeFile = "horoscope.lst";
 if (open FILE, "<$horoscopeFile") {
 	srand;
@@ -281,15 +286,19 @@ if (open FILE, "<$horoscopeFile") {
 	$itemsPrinted++;
 }
 
+# If nothing was printed, say the folder is empty
 if ($folderEmpty) {
 	print "<p>(This folder appears to be empty.)</p>";
 }
 
+# Save the number of items
 PutFile("itemCount.nfo", $itemsPrinted);
 
+# Read the counters
 my $counter = trim(GetFile("counter.nfo"));
 my $genCount = trim(GetFile("gencount.nfo")) + 1;
 
+# If either of the counters exists, output it
 if ($counter || $genCount) { print "<p>" };
 if ($counter) {
 	print "This page has been requested <span class=counter>" . $counter . "</span> times.";
@@ -301,6 +310,8 @@ if ($genCount) {
 }
 if ($counter || $genCount) { print "</p>" };
 
+# Print the same menu as at the top of the page
 PrintMenu();
 
+# Close html
 print GetTemplate("htmlend.nfo");
