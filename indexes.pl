@@ -171,7 +171,6 @@ my $newFilesIndex;
 foreach my $file (@newestFiles) {
 	if (
 		!($file eq 'index.html') &&
-		!($file eq 'index.pl') &&
 		!($file eq 'gracias.html') &&
 		!(substr($file, length($file) - 4, 4) eq ".nfo") &&
 		!(substr($file, length($file) - 4, 4) eq ".lst")
