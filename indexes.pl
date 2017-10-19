@@ -83,6 +83,44 @@ sub indexSubDirs {
 	}
 }
 
+
+################
+
+# Write the newest items index
+my @newestFiles = `cd $HTMLDIR; find . -type f -printf '%T@ %p\n' | sort -n | cut -f2- -d" "`;
+
+# Counts files printed into list
+my $filesPrinterCounter;
+
+# Where we store the new, de-duped index
+my $newFilesIndex;
+
+foreach my $file (@newestFiles) {
+	if (
+		!($file eq 'index.html') &&
+		!($file eq 'gracias.html') &&
+		!(substr($file, length($file) - 4, 4) eq ".nfo") &&
+		!(substr($file, length($file) - 4, 4) eq ".lst")
+	) {
+		$filesPrinterCounter++;
+
+		if ($filesPrinterCounter > 20) {
+			last;
+		}
+
+		chomp $file;
+
+		$file = substr($file, 1);
+
+		$newFilesIndex .= "$file\n";
+
+	}
+
+	PutFile("$HTMLDIR/newest/index.lst", $newFilesIndex);
+}
+
+###############################
+
 # Index everything in @dirsToIndex
 foreach my $dir (@dirsToIndex) {
 	indexDir ($dir);
@@ -155,41 +193,6 @@ foreach my $authorIndex (@authorIndexes) {
 	PutFile("$HTMLDIR/author/$author/index.lst", join("\n", @postsByAuthor));
 
 	indexDir("$HTMLDIR/author/$author");
-}
-
-################
-
-# Write the newest items index
-my @newestFiles = `cd $HTMLDIR; find . -type f -printf '%T@ %p\n' | sort -n | cut -f2- -d" "`;
-
-# Counts files printed into list
-my $filesPrinterCounter;
-
-# Where we store the new, de-duped index
-my $newFilesIndex;
-
-foreach my $file (@newestFiles) {
-	if (
-		!($file eq 'index.html') &&
-		!($file eq 'gracias.html') &&
-		!(substr($file, length($file) - 4, 4) eq ".nfo") &&
-		!(substr($file, length($file) - 4, 4) eq ".lst")
-	) {
-		$filesPrinterCounter++;
-
-		if ($filesPrinterCounter > 20) {
-			last;
-		}
-
-		chomp $file;
-
-		$file = substr($file, 1);
-
-		$newFilesIndex .= "$file\n";
-
-	}
-
-	PutFile("$HTMLDIR/newest/index.lst", $newFilesIndex);
 }
 
 1;

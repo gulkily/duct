@@ -1,8 +1,5 @@
 #!/usr/bin/perl
 
-# todo this file should write to a specified file
-# as opposed to outputting to stdout
-
 use strict;
 use utf8;
 
@@ -55,8 +52,6 @@ sub GetMenu {
 
 
 sub GetIndex {
-	my $directory = shift;
-
 	my $txtIndex = "";
 
 	# this will hold the title of the page
@@ -333,4 +328,8 @@ sub GetIndex {
 	return $txtIndex;
 }
 
-print GetIndex();
+my $htmlIndex = GetIndex(".");
+
+print $htmlIndex;
+
+1;
