@@ -192,7 +192,7 @@ foreach my $authorIndex (@authorIndexes) {
 	}
 	PutFile("$HTMLDIR/author/$author/index.lst", join("\n", @postsByAuthor));
 
-	indexDir("$HTMLDIR/author/$author");
+	#indexDir("$HTMLDIR/author/$author");
 }
 
 1;
