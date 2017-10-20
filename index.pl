@@ -126,6 +126,8 @@ sub GetIndex {
 			my $title = substr($link, index($link, " "));
 
 			$txtIndex .= "<li><a href=\"$url\">$title</a></li>\n";
+
+			$folderEmpty = 0;
 		}
 		$txtIndex .= "</ul>\n";
 	# This lists the local files
@@ -184,7 +186,6 @@ sub GetIndex {
 
 					if (substr($file, length($file) -4, 4) eq ".txt") {
 						my %gpgResults = GpgParse($LocalPrefix . $file);
-						#print %gpgResults;
 
 						$txt = $gpgResults{'text'};
 						$isSigned = $gpgResults{'isSigned'};
@@ -194,13 +195,12 @@ sub GetIndex {
 						$txt = encode_entities($txt, '<>&"');
 						$txt =~ s/\n/<br>\n/g;
 
-
 						my $signedCss = "";
 						if ($isSigned) {
 							$signedCss = "signed";
 
 							#todo un-hack this
-							my $currentDir = `pwd`;
+							my $currentDir = $pwd;
 							chomp ($currentDir);
 							my $currentDir = substr($currentDir, length($HTMLDIR));
 
@@ -220,10 +220,8 @@ sub GetIndex {
 							}
 						}
 
-
 						$alias = encode_entities($alias, '<>&"');
 						$alias =~ s/\n/<br>\n/g;
-
 
 						#if ($BoardMode) {
 							$txtIndex .= "<p class=\"txt $signedCss\">";
@@ -239,6 +237,9 @@ sub GetIndex {
 							$txtIndex .= "<br><em class=signed>Signed, <a href=\"/author/$gpg_key\">$alias</a></em>" if ($isSigned && $gpg_key);
 
 							$txtIndex .= '</p>';
+
+							###############
+							## Generate HTML version of text file
 
 							my $txtHtml = GetTemplate('htmlstart.html.nfo');
 							$txtHtml =~ s/\$title/$file/;
@@ -261,6 +262,9 @@ sub GetIndex {
 							$txtHtml .= GetTemplate("htmlend.nfo");
 
 							PutFile($LocalPrefix . $file . ".html", $txtHtml);
+
+							##
+							###############
 
 							$itemsPrinted++;
 						#}

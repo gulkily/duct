@@ -29,9 +29,6 @@ sub GetFile {
 	return;
 }
 
-sub GetCache {
-}
-
 # Writes to a file
 sub PutFile {
 	my $file = shift;
@@ -41,9 +38,6 @@ sub PutFile {
 		print $fileHandle $content;
 		close $fileHandle;
 	}
-}
-
-sub PutFile {
 }
 
 # Appends line to a file
