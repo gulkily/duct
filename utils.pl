@@ -11,7 +11,7 @@ use Storable;
 sub GetHash {
 	my $fileName = shift;
 
-	my $gitOutput = `git hash-object -w $fileName`;
+	my $gitOutput = `git hash-object -w "$fileName"`;
 
 	return $gitOutput;
 }

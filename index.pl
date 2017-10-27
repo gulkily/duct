@@ -290,12 +290,14 @@ sub GetIndex {
 	my $makeZip = GetFile("makezip.nfo");
 	my $zipName;
 
+	$makeZip = 0; # todo temporarily disable makeZip
+
 	# If we want a zip file (makezip.nfo == 1)
 	if ($makeZip) {
 		$zipName = substr($pwd, rindex($pwd, '/') + 1);
 		chomp($zipName);
 
-		my $makeZipFile = `zip -vr $zipName.zip .`;
+		my $makeZipFile = `zip -vr "$zipName.zip" .`; #debug comment
 
 		PutFile("$zipName.zip.nfo", "$zipName.zip");
 		PutFile("$zipName.zip.log", $makeZipFile);
