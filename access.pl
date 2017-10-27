@@ -198,21 +198,18 @@ sub ProcessAccessLog {
 
 				print "I'm going to call it $filename\n";
 
-				# Prefix for new text posts
-				my $filenameDir = $HTMLDIR . $submitTarget;
-
-				print "I'm going to put $filename into $filenameDir\n";
-
-				# Now we prefix the filename with the directory prefix
-				#$filename = $filenameDir . $filename;
+				my $filenameDir;
 
 				# If the submission contains an @-sign, hide it into the admin dir
 				if (index($message, "@") != -1) {
 					$filenameDir = "$SCRIPTDIR/admin/";
 
-					#open (my $fhn, '>', $filenameDir . $filename . ".nfo") or die ('Could not open nfo file to write to');
-					#print $fhn '#';
-					#close $fhn;
+					print "I'm going to put $filename into $filenameDir because it contains an @";
+				} else {
+					# Prefix for new text posts
+					$filenameDir = $HTMLDIR . $submitTarget;
+
+					print "I'm going to put $filename into $filenameDir\n";
 				}
 
 				# Make sure we don't clobber an existing file
@@ -226,9 +223,12 @@ sub ProcessAccessLog {
 				$filename .= '.txt';
 
 				# Try to write to the file, exit if we can't
-				open (my $fh, '>', $filenameDir . $filename) or die('Could not open text file to write to '.$filenameDir . $filename);
-				print $fh $message;
-				close $fh;
+				PutFile($filenameDir . $filename, $message) or die('Could not open text file to write to '.$filenameDir . $filename);
+
+				# Add the file to git
+				system("git add $filenameDir$filename");
+
+				print "git add $filenameDir$filename\n";
 			}
 		}
 
