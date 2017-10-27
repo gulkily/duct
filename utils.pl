@@ -13,6 +13,8 @@ sub GetHash {
 
 	my $gitOutput = `git hash-object -w "$fileName"`;
 
+	chomp($gitOutput);
+
 	return $gitOutput;
 }
 

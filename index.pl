@@ -232,6 +232,7 @@ sub GetIndex {
 							if (substr($file, length($file) -4, 4) eq ".txt") {
 								$txtIndex .= '<a class="header" href="' . $file . '.html">' . substr($file, 0, length($file) -4) . '</a>';
 								$txtIndex .= ' <a class="header" href="' . $file . '">.txt</a>';
+								#$txtIndex .= ' (' . $gitHash . ')';
 							} else {
 								$txtIndex .= '<a class="header" href="' . $file . '">' . $file . '</a>';
 							}
@@ -254,13 +255,13 @@ sub GetIndex {
 							if (substr($file, length($file) -4, 4) eq ".txt") {
 								$txtHtml .= '<a class="header" href="' . $file . '.html">' . substr($file, 0, length($file) -4) . '</a>';
 								$txtHtml .= ' <a class="header" href="' . $file . '">.txt</a>';
+								#$txtHtml .= ' (' . $gitHash . ')';
 							} else {
 								$txtHtml .= '<a class="header" href="' . $file . '">' . $file . '</a>';
 							}
 							$txtHtml .= '<br>' . $txt if $txt;
 
 							$txtHtml .= "<br><em class=signed>Signed, <a href=\"/author/$gpg_key\">$alias</a></em>" if ($isSigned && $gpg_key);
-							$txtHtml .= "<br>" . $gitHash;
 							$txtHtml .= "</p>";
 							$txtHtml .= GetMenu($MYNAME);
 							$txtHtml .= GetTemplate("htmlend.nfo");
