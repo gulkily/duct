@@ -8,10 +8,12 @@ use URI::Escape;
 use HTML::Entities;
 use Storable;
 
-sub GetCache {
-}
+sub GetHash {
+	my $fileName = shift;
 
-sub PutCache {
+	my $gitOutput = `git hash-object -w $fileName`;
+
+	return $gitOutput;
 }
 
 # Gets the contents of a file
@@ -71,6 +73,8 @@ sub GpgParse {
 	my $alias;
 
 	my $keyExpired = 0;
+
+	my $gitHash = GetHash($filePath);
 
 	if (-e $filePath . ".cache") {
 		my %returnValues = %{retrieve($filePath . ".cache")};
@@ -154,6 +158,7 @@ sub GpgParse {
 	$returnValues{'key'} = $gpg_key;
 	$returnValues{'alias'} = $alias;
 	$returnValues{'keyExpired'} = $keyExpired;
+	$returnValues{'gitHash'} = $gitHash;
 
 	store \%returnValues, $filePath . ".cache";
 
