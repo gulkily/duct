@@ -184,6 +184,8 @@ sub GetIndex {
 					my $gpg_key;
 					my $alias;
 
+					my $gitHash;
+
 					if (substr($file, length($file) -4, 4) eq ".txt") {
 						my %gpgResults = GpgParse($LocalPrefix . $file);
 
@@ -191,6 +193,7 @@ sub GetIndex {
 						$isSigned = $gpgResults{'isSigned'};
 						$gpg_key = $gpgResults{'key'};
 						$alias = $gpgResults{'alias'};
+						$gitHash = $gpgResults{'gitHash'};
 
 						$txt = encode_entities($txt, '<>&"');
 						$txt =~ s/\n/<br>\n/g;
@@ -257,6 +260,7 @@ sub GetIndex {
 							$txtHtml .= '<br>' . $txt if $txt;
 
 							$txtHtml .= "<br><em class=signed>Signed, <a href=\"/author/$gpg_key\">$alias</a></em>" if ($isSigned && $gpg_key);
+							$txtHtml .= "<br>" . $gitHash;
 							$txtHtml .= "</p>";
 							$txtHtml .= GetMenu($MYNAME);
 							$txtHtml .= GetTemplate("htmlend.nfo");
@@ -281,6 +285,20 @@ sub GetIndex {
 
 		# Make sure the submission form has somewhere to go
 		PutFile("gracias.html", GetTemplate('gracias.html.nfo'));
+	}
+
+	my $makeZip = GetFile("makezip.nfo");
+	my $zipName;
+
+	# If we want a zip file (makezip.nfo == 1)
+	if ($makeZip) {
+		$zipName = substr($pwd, rindex($pwd, '/') + 1);
+		chomp($zipName);
+
+		my $makeZipFile = `zip -vr $zipName.zip .`;
+
+		PutFile("$zipName.zip.nfo", "$zipName.zip");
+		PutFile("$zipName.zip.log", $makeZipFile);
 	}
 
 	# If there is a horoscope.lst file, write a random line from it
@@ -309,19 +327,19 @@ sub GetIndex {
 
 	# Read the counters
 	my $counter = trim(GetFile("counter.nfo"));
-	my $genCount = trim(GetFile("gencount.nfo")) + 1;
 
 	# If either of the counters exists, output it
-	if ($counter || $genCount) { $txtIndex .= "<p>" };
 	if ($counter) {
+		$txtIndex .= "<p>";
 		$txtIndex .= "This page has been requested <span class=counter>" . $counter . "</span> times.";
+		$txtIndex .= "</p>";
 	}
-	if ($genCount) {
-		PutFile("gencount.nfo", $genCount);
-		if ($counter) { $txtIndex .= " "; }
-		$txtIndex .= "This page has been generated <span class=counter>" . $genCount . "</span> times.";
+
+	if ($makeZip) {
+		$txtIndex .= "<p>";
+		$txtIndex .= "Download a zip file of this directory: <a href=\"$zipName.zip\">$zipName.zip</a>";
+		$txtIndex .= "</p>";
 	}
-	if ($counter || $genCount) { $txtIndex .= "</p>" };
 
 	# Print the same menu as at the top of the page
 	$txtIndex .= GetMenu($MYNAME);
