@@ -1,5 +1,8 @@
 #!/usr/bin/perl
 
+use strict;
+use utf8;
+
 ## CONFIG AND SANITY CHECKS ##
 
 # We'll use pwd for for the install root dir
