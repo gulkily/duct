@@ -58,7 +58,7 @@ sub indexDir {
 	system("mkdir -p $dir; cd $dir; perl $pathToIndexPl > index.html.tmp; mv index.html.tmp index.html");
 
 	# If it's a board, call sorter.pl on it
-	if (GetFile("$dir/board.nfo")) {
+	if (GetFile("$dir/sorter.nfo")) {
 		#print "cd $SCRIPTDIR; perl $pathToSorterPl $dir";
 
 		#system("cd $SCRIPTDIR; perl $pathToSorterPl $dir");
