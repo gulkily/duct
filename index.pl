@@ -26,21 +26,6 @@ if (!-e $HTMLDIR || !-d $HTMLDIR) {
 	die("Sanity check failed, $HTMLDIR doesn't exist\n");
 }
 
-# Gets template from current dir or template dir
-# Should not fail
-sub GetTemplate {
-	my $filename = shift;
-	my $length = 10240;
-
-	if (-e $filename) {
-		return GetFile($filename);
-	} else {
-		return GetFile("$SCRIPTDIR/template/$filename");
-	}
-
-	die("GetTemplate failed, something is probably wrong");
-}
-
 # Get the top menu
 sub GetMenu {
 	my $MYNAME = shift;

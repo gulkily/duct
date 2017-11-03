@@ -3,6 +3,8 @@
 use strict;
 use utf8;
 
+use lib 'inc';
+
 use URI::Encode qw(uri_decode);
 use URI::Escape;
 use HTML::Entities;
@@ -17,6 +19,24 @@ sub GetHash {
 
 	return $gitOutput;
 }
+
+# We'll use pwd for for the install root dir
+my $SCRIPTDIR = "/home/ilya/wisebody"; #hardcode #todo
+chomp $SCRIPTDIR;
+
+# Gets template from template dir
+# Should not fail
+sub GetTemplate {
+	my $filename = shift;
+
+	chomp $filename;
+	$filename = "$SCRIPTDIR/template/$filename";
+
+	return GetFile($filename);
+
+	die("GetTemplate failed, something is probably wrong");
+}
+
 
 # Gets the contents of a file
 sub GetFile {
