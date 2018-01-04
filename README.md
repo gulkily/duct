@@ -9,11 +9,11 @@ apache access.log should be dropping into log/ and be user-writeable (make sure 
 
 Requires:
 
-Perl
+* Perl
 
-URI::Encode qw(uri_decode);
-URI::Escape;
-HTML::Entities;
-Storable;
+* * URI::Encode
+* * URI::Escape
+* * HTML::Entities
+* * Storable
 
 lighttpd or Apache
