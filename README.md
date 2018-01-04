@@ -16,4 +16,4 @@ Requires:
 * * HTML::Entities
 * * Storable
 
-lighttpd or Apache
+* lighttpd or Apache
