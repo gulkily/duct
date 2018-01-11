@@ -15,10 +15,10 @@ chomp $SCRIPTDIR;
 
 print "Using $SCRIPTDIR as install root...\n";
 
-if (!-e 'utils.pl') {
-	die ("Sanity check failed, can't find utils.pl in $SCRIPTDIR");
+if (!-e './utils.pl') {
+	die ("Sanity check failed, can't find ./utils.pl in $SCRIPTDIR");
 }
-require 'utils.pl';
+require './utils.pl';
 
 # We'll use ./html as the web root
 my $HTMLDIR = "$SCRIPTDIR/html/";
@@ -108,6 +108,8 @@ sub ProcessAccessLog {
 		# Split $date into $time and $date
 		my $time = substr($date, 13);
 		my $date = substr($date, 1, 11);
+		
+		#print "$time\n$date\n";
 
 		# todo add comment here
 		$req  = substr($req, 1);
@@ -265,6 +267,7 @@ sub ProcessAccessLog {
 
 # Process the two access logs
 ProcessAccessLog($LOGFILE, 0);
+ProcessAccessLog("log/lighttpd.log", 0);
 #ProcessAccessLog($LOGFILE_VHOST, 1);
 
 1;
