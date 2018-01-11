@@ -217,6 +217,14 @@ sub GetIndex {
 							if (substr($file, length($file) -4, 4) eq ".txt") {
 								$txtIndex .= '<a class="header" href="' . $file . '.html">' . substr($file, 0, length($file) -4) . '</a>';
 								$txtIndex .= ' <a class="header" href="' . $file . '">.txt</a>';
+								
+								if (-e "$file.comments" && -d "$file.comments") {
+									$txtIndex .= ' <a class=header href="' . $file . '.comments/">comments</a>';
+								} else {
+									mkdir ("\"$file.comments\"");
+									PutFile ("$file.comments/board.nfo", 1);
+								}
+								
 								#$txtIndex .= ' (' . $gitHash . ')';
 							} else {
 								$txtIndex .= '<a class="header" href="' . $file . '">' . $file . '</a>';
