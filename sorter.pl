@@ -19,10 +19,10 @@ if (!-e $HTMLDIR || !-d $HTMLDIR) {
 	die ("Sanity check failed, \$HTMLDIR=$HTMLDIR, but it isn't a directory");
 }
 
-if (!-e 'utils.pl') {
+if (!-e './utils.pl') {
 	die ("Sanity check failed, can't find utils.pl");
 }
-require 'utils.pl';
+require './utils.pl';
 
 #####################
 
