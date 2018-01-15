@@ -21,7 +21,7 @@ sub GetHash {
 }
 
 # We'll use pwd for for the install root dir
-my $SCRIPTDIR = "/home/ilya/wisebody"; #hardcode #todo
+my $SCRIPTDIR = "/home/pi/duct"; #hardcode #todo
 chomp $SCRIPTDIR;
 
 # Gets template from template dir
@@ -82,7 +82,14 @@ sub trim {
 
 # GpgParse
 # $filePath = path to file containing the text
-# returns a hash of {key, txt, isSigned(0/1)}
+#
+# $returnValues{'isSigned'} = whether the message has a valid signature: 0 or 1 for valid signature
+# $returnValues{'text'} = message text without framing
+# $returnValues{'key'} = fingerprint of signer
+# $returnValues{'alias'} = alias of signer, if they've added one by submitting their public key
+# $returnValues{'keyExpired'} = whether the key has expired: 0 for not expired, 1 for expired
+# $returnValues{'gitHash'} = 
+
 sub GpgParse {
 	my $filePath = shift;
 
