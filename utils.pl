@@ -2,6 +2,7 @@
 
 use strict;
 use utf8;
+use 5.010;
 
 use lib 'inc';
 
@@ -80,17 +81,49 @@ sub trim {
 	my $s = shift; $s =~ s/^\s+|\s+$//g; return $s
 };
 
-# GpgParse
-# $filePath = path to file containing the text
-#
-# $returnValues{'isSigned'} = whether the message has a valid signature: 0 or 1 for valid signature
-# $returnValues{'text'} = message text without framing
-# $returnValues{'key'} = fingerprint of signer
-# $returnValues{'alias'} = alias of signer, if they've added one by submitting their public key
-# $returnValues{'keyExpired'} = whether the key has expired: 0 for not expired, 1 for expired
-# $returnValues{'gitHash'} = 
+
+sub GetAdminKey {
+	#Returns admin's key sig, 0 if there is none
+	
+	state $adminsKey = 0;
+	
+	if ($adminsKey) {
+		return $adminsKey;
+	}
+	
+	if (-e "$SCRIPTDIR/admin.key") {
+	
+		my %adminsInfo = GpgParse("$SCRIPTDIR/admin.key");
+		
+		if ($adminsInfo{'isSigned'}) {
+			if ($adminsInfo{'key'}) {
+				$adminsKey = $adminsInfo{'key'};
+				
+				return $adminsKey;
+			} else {
+				return 0;
+			}
+		} else {
+			return 0;
+		}
+	} else {
+		return 0;
+	}
+	
+	return 0;
+}
+	
 
 sub GpgParse {
+	# GpgParse
+	# $filePath = path to file containing the text
+	#
+	# $returnValues{'isSigned'} = whether the message has a valid signature: 0 or 1 for valid signature
+	# $returnValues{'text'} = message text without framing
+	# $returnValues{'key'} = fingerprint of signer
+	# $returnValues{'alias'} = alias of signer, if they've added one by submitting their public key
+	# $returnValues{'keyExpired'} = whether the key has expired: 0 for not expired, 1 for expired
+	# $returnValues{'gitHash'} = 
 	my $filePath = shift;
 
 	my $txt = trim(GetFile($filePath));

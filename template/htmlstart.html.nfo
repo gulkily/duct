@@ -49,6 +49,9 @@ a {
 	animation-duration: 10s;
 	animation-iteration-count: infinite;
 }
+.admin {
+	border: #ff0000 solid 1px;
+}
 p.txt {
 	border: 1px dotted $primaryColor;
 	border-radius: 1px;
