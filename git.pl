@@ -53,7 +53,7 @@ sub isLst {
 sub indexDir {
 	my $dir = shift;
 
-	my $SCRIPTDIR = "/home/ilya/wisebody"; #todo hardcoded
+	my $SCRIPTDIR = "/home/pi/duct"; #todo hardcoded
 
 	# use $SCRIPTDIR global to determine path of helper scripts
 	my $pathToIndexPl = "$SCRIPTDIR/index.pl $SCRIPTDIR";
