@@ -1,5 +1,7 @@
+!html/*/*.txt
 *.cache
 html/
 admin/
 admin.key
 log/
+.lock*
