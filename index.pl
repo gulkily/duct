@@ -35,7 +35,6 @@ sub GetMenu {
 	return $topMenu;
 }
 
-
 sub GetIndex {
 	my $txtIndex = "";
 
@@ -170,6 +169,8 @@ sub GetIndex {
 					my $alias;
 
 					my $gitHash;
+					
+					my $isAdmin = 0;
 
 					if (substr($file, length($file) -4, 4) eq ".txt") {
 						my %gpgResults = GpgParse($LocalPrefix . $file);
@@ -182,10 +183,19 @@ sub GetIndex {
 
 						$txt = encode_entities($txt, '<>&"');
 						$txt =~ s/\n/<br>\n/g;
+						
+						
+						if ($isSigned && $gpg_key == GetAdminKey()) {
+							$isAdmin = 1;
+						}
 
 						my $signedCss = "";
 						if ($isSigned) {
-							$signedCss = "signed";
+							if ($isAdmin) {
+								$signedCss = "signed admin";
+							} else {
+								$signedCss = "signed";
+							}
 
 							#todo un-hack this
 							my $currentDir = $pwd;
@@ -230,8 +240,13 @@ sub GetIndex {
 								$txtIndex .= '<a class="header" href="' . $file . '">' . $file . '</a>';
 							}
 							$txtIndex .= '<br>' . $txt if $txt;
+							
+							if ($isSigned && $gpg_key) {
+								my $authorColor = substr($gpg_key, 0, 6);
+								my $authorAvatar = '<span style="background-color: #' . $authorColor . ';">*</span>';
 
-							$txtIndex .= "<br><em class=signed>Signed, <a href=\"/author/$gpg_key\">$alias</a></em>" if ($isSigned && $gpg_key);
+								$txtIndex .= "<br><em class=\"$signedCss\">Signed, <a href=\"/author/$gpg_key\">$authorAvatar$alias</a></em>";
+							}
 
 							$txtIndex .= '</p>';
 
