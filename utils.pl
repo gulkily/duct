@@ -43,12 +43,15 @@ sub GetAvatar {
 	chomp $gpg_key;
 	
 	#todo proper sanitizing, length and char content
+	# $gpg_key = remove all non-hex chars, make sure it's 16 chars long
 	
 	my $color1 = substr($gpg_key, 0, 6);
 	my $color2 = substr($gpg_key, 5, 6);
 	my $color3 = substr($gpg_key, 10, 6);
+	my $color4 = substr($gpg_key, 6, 6);
+	my $color5 = substr($gpg_key, 4, 6);
 	
-	my $avatar = "<span class=avatar style=\"background-color: $color1;\">";
+	my $avatar = "<span class=avatar style=\"background: linear-gradient(#$color1, #$color4, #$color5); background-color: #$color1; border-radius: 2px;\">";
 	$avatar .=   "<font color=\"$color2\">&bull;</font>";
 	$avatar .=   "<font color=\"$color3\">&bull;</font>";
 	$avatar .=   "</span>";
