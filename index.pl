@@ -242,10 +242,12 @@ sub GetIndex {
 							$txtIndex .= '<br>' . $txt if $txt;
 							
 							if ($isSigned && $gpg_key) {
-								my $authorColor = substr($gpg_key, 0, 6);
-								my $authorAvatar = '<span style="background-color: #' . $authorColor . ';">*</span>';
+								#my $authorColor = substr($gpg_key, 0, 6);
+								#my $authorAvatar = '<span style="background-color: #' . $authorColor . ';">*</span>';
+								my $authorAvatar;
+								$authorAvatar = GetAvatar($gpg_key);
 
-								$txtIndex .= "<br><em class=\"$signedCss\">Signed, <a href=\"/author/$gpg_key\">$authorAvatar$alias</a></em>";
+								$txtIndex .= "<br><em class=\"$signedCss\">Signed, $authorAvatar <a href=\"/author/$gpg_key\">$alias</a></em>";
 							}
 
 							$txtIndex .= '</p>';

@@ -22,7 +22,7 @@ sub GetHash {
 }
 
 # We'll use pwd for for the install root dir
-my $SCRIPTDIR = "/home/pi/duct"; #hardcode #todo
+my $SCRIPTDIR = "/home/ilya/duct"; #hardcode #todo
 chomp $SCRIPTDIR;
 
 # Gets template from template dir
@@ -36,6 +36,24 @@ sub GetTemplate {
 	return GetFile($filename);
 
 	die("GetTemplate failed, something is probably wrong");
+}
+
+sub GetAvatar {
+	my $gpg_key = shift;
+	chomp $gpg_key;
+	
+	#todo proper sanitizing, length and char content
+	
+	my $color1 = substr($gpg_key, 0, 6);
+	my $color2 = substr($gpg_key, 5, 6);
+	my $color3 = substr($gpg_key, 10, 6);
+	
+	my $avatar = "<span class=avatar style=\"background-color: $color1;\">";
+	$avatar .=   "<font color=\"$color2\">&bull;</font>";
+	$avatar .=   "<font color=\"$color3\">&bull;</font>";
+	$avatar .=   "</span>";
+	
+	return $avatar;
 }
 
 
