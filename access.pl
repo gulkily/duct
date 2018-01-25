@@ -203,10 +203,11 @@ sub ProcessAccessLog {
 				my $filenameDir;
 
 				# If the submission contains an @-sign, hide it into the admin dir
-				if (index($message, "@") != -1) {
+				# Also, if it contains the string ".onion", to curb spam @todo better solution
+				if (index($message, "@") != -1 || index($message, ".onion") != -1) {
 					$filenameDir = "$SCRIPTDIR/admin/";
 
-					print "I'm going to put $filename into $filenameDir because it contains an @";
+					print "I'm going to put $filename into $filenameDir because it contains an @ or a .onion";
 				} else {
 					# Prefix for new text posts
 					$filenameDir = $HTMLDIR . $submitTarget;
