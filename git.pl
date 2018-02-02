@@ -100,10 +100,10 @@ print "Using $SCRIPTDIR as install root...\n";
 #my $HTMLDIR = "$SCRIPTDIR/html/";
 my $HTMLDIR = "html/";
 
-if (!-e 'utils.pl') {
+if (!-e './utils.pl') {
 	die ("Sanity check failed, can't find utils.pl");
 }
-require 'utils.pl';
+require './utils.pl';
 
 ##########################################################
 
